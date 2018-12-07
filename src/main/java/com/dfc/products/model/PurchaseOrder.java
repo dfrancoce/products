@@ -1,5 +1,8 @@
 package com.dfc.products.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,10 +13,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
+@Table(name = "purchase_orders", schema = "public")
 public class PurchaseOrder {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,6 +26,7 @@ public class PurchaseOrder {
 	@Column(name = "email")
 	private String email;
 	@Column(name = "purchaseOrderDate")
+	@JsonFormat(pattern="dd/MM/yyyy hh:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date purchaseOrderDate;
 	@OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -6,8 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "purchase_orders_products", schema = "public")
 public class PurchaseOrderProduct {
 	@EmbeddedId
 	private PurchaseOrderProductId id = new PurchaseOrderProductId();
