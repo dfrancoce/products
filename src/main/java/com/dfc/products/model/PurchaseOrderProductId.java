@@ -10,7 +10,8 @@ public class PurchaseOrderProductId implements Serializable {
 	private Long purchaseOrderId;
 	private Long productId;
 
-	public PurchaseOrderProductId() { }
+	public PurchaseOrderProductId() {
+	}
 
 	public PurchaseOrderProductId(Long purchaseOrderId, Long productId) {
 		this.purchaseOrderId = purchaseOrderId;

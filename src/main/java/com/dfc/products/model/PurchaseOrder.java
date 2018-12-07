@@ -1,8 +1,5 @@
 package com.dfc.products.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +14,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "purchase_orders", schema = "public")
 public class PurchaseOrder {
@@ -26,9 +26,10 @@ public class PurchaseOrder {
 	@Column(name = "email")
 	private String email;
 	@Column(name = "purchaseOrderDate")
-	@JsonFormat(pattern="dd/MM/yyyy hh:mm:ss")
+	@JsonFormat(pattern = "ddMMyyyy")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date purchaseOrderDate;
+	@JsonIgnore
 	@OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PurchaseOrderProduct> products;
 

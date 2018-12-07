@@ -1,12 +1,15 @@
 package com.dfc.products.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dfc.products.model.Product;
 import com.dfc.products.model.PurchaseOrder;
 import com.dfc.products.service.PurchaseOrderProductService;
 import com.dfc.products.service.PurchaseOrderService;
+import com.dfc.products.service.dto.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,13 +38,20 @@ public class PurchaseOrderController {
 
 	@GetMapping("/orders")
 	@ResponseStatus(HttpStatus.OK)
-	public List<PurchaseOrder> get() {
+	public List<Order> get() {
 		return purchaseOrderService.get();
+	}
+
+	@GetMapping("/orders/period")
+	@ResponseStatus(HttpStatus.OK)
+	public List<Order> get(@RequestParam(value = "fromDate") @DateTimeFormat(pattern = "ddMMyyyy") Date fromDate,
+	                       @RequestParam(value = "toDate") @DateTimeFormat(pattern = "ddMMyyyy") Date toDate) {
+		return purchaseOrderService.get(fromDate, toDate);
 	}
 
 	@GetMapping("/orders/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public PurchaseOrder get(@PathVariable final Long id) {
+	public Order get(@PathVariable final Long id) {
 		return purchaseOrderService.get(id);
 	}
 
@@ -52,7 +63,7 @@ public class PurchaseOrderController {
 
 	@DeleteMapping("/orders/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@PathVariable final Long id) {
+	public void delete(@PathVariable final Long id) {
 		purchaseOrderService.delete(id);
 	}
 
@@ -72,6 +83,6 @@ public class PurchaseOrderController {
 	@ResponseStatus(HttpStatus.OK)
 	public String calculate(@PathVariable final Long id) {
 		final Double total = purchaseOrderProductService.calculate(id);
-		return "{ \"total\": \"" + total + "\"}";
+		return "{ \"total\": \"" + total + "\" }";
 	}
 }
