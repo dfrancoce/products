@@ -9,14 +9,14 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "purchase_orders_products", schema = "public")
-public class PurchaseOrderProduct {
+@Table(name = "orders_products", schema = "public")
+public class OrderProduct {
 	@EmbeddedId
-	private PurchaseOrderProductId id = new PurchaseOrderProductId();
+	private OrderProductId id = new OrderProductId();
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("purchaseOrderId")
-	private PurchaseOrder purchaseOrder;
+	@MapsId("orderId")
+	private Order order;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("productId")
@@ -25,29 +25,29 @@ public class PurchaseOrderProduct {
 	@Column(name = "price")
 	private Double price;
 
-	public PurchaseOrderProduct() {
+	public OrderProduct() {
 	}
 
-	public PurchaseOrderProduct(PurchaseOrder purchaseOrder, Product product) {
-		this.purchaseOrder = purchaseOrder;
+	public OrderProduct(Order order, Product product) {
+		this.order = order;
 		this.product = product;
 		this.price = product.getPrice();
 	}
 
-	public PurchaseOrderProductId getId() {
+	public OrderProductId getId() {
 		return id;
 	}
 
-	public void setId(PurchaseOrderProductId id) {
+	public void setId(OrderProductId id) {
 		this.id = id;
 	}
 
-	public PurchaseOrder getPurchaseOrder() {
-		return purchaseOrder;
+	public Order getOrder() {
+		return order;
 	}
 
-	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-		this.purchaseOrder = purchaseOrder;
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 
 	public Product getProduct() {

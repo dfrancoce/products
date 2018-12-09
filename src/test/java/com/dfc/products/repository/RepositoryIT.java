@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 
+import com.dfc.products.model.Order;
+import com.dfc.products.model.OrderProduct;
 import com.dfc.products.model.Product;
-import com.dfc.products.model.PurchaseOrder;
-import com.dfc.products.model.PurchaseOrderProduct;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,53 +17,53 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 public class RepositoryIT {
     @Autowired
-    private PurchaseOrderRepository purchaseOrderRepository;
+    private OrderRepository orderRepository;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    private PurchaseOrderProductRepository purchaseOrderProductRepository;
+    private OrderProductRepository orderProductRepository;
 
     @Test
     public void insertOrder() {
         // given
-        assertEquals(0, purchaseOrderRepository.findAll().size());
+        assertEquals(0, orderRepository.findAll().size());
 
         // when
-        final PurchaseOrder purchaseOrder = getOrder("test@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
+        final Order order = getOrder("test@gmail.com");
+        orderRepository.save(order);
 
         // then
-        assertEquals(1, purchaseOrderRepository.findAll().size());
+        assertEquals(1, orderRepository.findAll().size());
     }
 
     @Test
     public void updateOrder() {
         // given
-        final PurchaseOrder purchaseOrder = getOrder("test@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
+        final Order order = getOrder("test@gmail.com");
+        orderRepository.save(order);
 
         // when
-        PurchaseOrder retrievedPurchaseOrder = purchaseOrderRepository.findAll().get(0);
-        retrievedPurchaseOrder.setEmail("updated@gmail.com");
-        purchaseOrderRepository.save(retrievedPurchaseOrder);
+        Order retrievedOrder = orderRepository.findAll().get(0);
+        retrievedOrder.setEmail("updated@gmail.com");
+        orderRepository.save(retrievedOrder);
 
         // then
-        retrievedPurchaseOrder = purchaseOrderRepository.findAll().get(0);
-        assertEquals("updated@gmail.com", retrievedPurchaseOrder.getEmail());
+        retrievedOrder = orderRepository.findAll().get(0);
+        assertEquals("updated@gmail.com", retrievedOrder.getEmail());
     }
 
     @Test
     public void deleteOrder() {
         // given
-        final PurchaseOrder purchaseOrder = getOrder("test@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
-        assertEquals(1, purchaseOrderRepository.findAll().size());
+        final Order order = getOrder("test@gmail.com");
+        orderRepository.save(order);
+        assertEquals(1, orderRepository.findAll().size());
 
         // when
-        purchaseOrderRepository.delete(purchaseOrder);
+        orderRepository.delete(order);
 
         // then
-        assertEquals(0, purchaseOrderRepository.findAll().size());
+        assertEquals(0, orderRepository.findAll().size());
     }
 
     @Test
@@ -118,17 +118,17 @@ public class RepositoryIT {
         productRepository.save(iphone);
 
         // when
-        final PurchaseOrder purchaseOrder = getOrder("applefan@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
-        final PurchaseOrderProduct firstPurchaseOrderProduct = new PurchaseOrderProduct(purchaseOrder, macbook);
-        purchaseOrderProductRepository.save(firstPurchaseOrderProduct);
-        final PurchaseOrderProduct secondPurchaseOrderProduct = new PurchaseOrderProduct(purchaseOrder, iphone);
-        purchaseOrderProductRepository.save(secondPurchaseOrderProduct);
+        final Order order = getOrder("applefan@gmail.com");
+        orderRepository.save(order);
+        final OrderProduct firstOrderProduct = new OrderProduct(order, macbook);
+        orderProductRepository.save(firstOrderProduct);
+        final OrderProduct secondOrderProduct = new OrderProduct(order, iphone);
+        orderProductRepository.save(secondOrderProduct);
 
         // then
         assertEquals(2, productRepository.findAll().size());
-        assertEquals(1, purchaseOrderRepository.findAll().size());
-        assertEquals(2, purchaseOrderProductRepository.findAll().size());
+        assertEquals(1, orderRepository.findAll().size());
+        assertEquals(2, orderProductRepository.findAll().size());
     }
 
     @Test
@@ -138,18 +138,18 @@ public class RepositoryIT {
         productRepository.save(macbook);
 
         // when
-        final PurchaseOrder purchaseOrder = getOrder("applefan@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
-        final PurchaseOrderProduct firstPurchaseOrderProduct = new PurchaseOrderProduct(purchaseOrder, macbook);
-        purchaseOrderProductRepository.save(firstPurchaseOrderProduct);
+        final Order order = getOrder("applefan@gmail.com");
+        orderRepository.save(order);
+        final OrderProduct firstOrderProduct = new OrderProduct(order, macbook);
+        orderProductRepository.save(firstOrderProduct);
 
         // then
         final Product retrievedProduct = productRepository.findAll().get(0);
         retrievedProduct.setPrice(1000.0);
         productRepository.save(retrievedProduct);
 
-        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProductRepository.getOne(firstPurchaseOrderProduct.getId());
-        assertEquals(2000.00, purchaseOrderProduct.getPrice(), 0);
+        final OrderProduct orderProduct = orderProductRepository.getOne(firstOrderProduct.getId());
+        assertEquals(2000.00, orderProduct.getPrice(), 0);
     }
 
     @Test
@@ -157,19 +157,19 @@ public class RepositoryIT {
         // given
         final Product macbook = getProduct("Apple Macbook", 2000.00);
         productRepository.save(macbook);
-        final PurchaseOrder purchaseOrder = getOrder("applefan@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
-        final PurchaseOrderProduct firstPurchaseOrderProduct = new PurchaseOrderProduct(purchaseOrder, macbook);
-        purchaseOrderProductRepository.save(firstPurchaseOrderProduct);
+        final Order order = getOrder("applefan@gmail.com");
+        orderRepository.save(order);
+        final OrderProduct firstOrderProduct = new OrderProduct(order, macbook);
+        orderProductRepository.save(firstOrderProduct);
 
         // when
-        purchaseOrderProductRepository.deleteAll();
-        purchaseOrderRepository.delete(purchaseOrder);
+        orderProductRepository.deleteAll();
+        orderRepository.delete(order);
 
         // then
         assertEquals(1, productRepository.findAll().size());
-        assertEquals(0, purchaseOrderRepository.findAll().size());
-        assertEquals(0, purchaseOrderProductRepository.findAll().size());
+        assertEquals(0, orderRepository.findAll().size());
+        assertEquals(0, orderProductRepository.findAll().size());
     }
 
     @Test
@@ -177,19 +177,19 @@ public class RepositoryIT {
         // given
         final Product macbook = getProduct("Apple Macbook", 2000.00);
         productRepository.save(macbook);
-        final PurchaseOrder purchaseOrder = getOrder("applefan@gmail.com");
-        purchaseOrderRepository.save(purchaseOrder);
-        final PurchaseOrderProduct firstPurchaseOrderProduct = new PurchaseOrderProduct(purchaseOrder, macbook);
-        purchaseOrderProductRepository.save(firstPurchaseOrderProduct);
+        final Order order = getOrder("applefan@gmail.com");
+        orderRepository.save(order);
+        final OrderProduct firstOrderProduct = new OrderProduct(order, macbook);
+        orderProductRepository.save(firstOrderProduct);
 
         // when
-        purchaseOrderProductRepository.deleteAll();
+        orderProductRepository.deleteAll();
         productRepository.delete(macbook);
 
         // then
-        assertEquals(1, purchaseOrderRepository.findAll().size());
+        assertEquals(1, orderRepository.findAll().size());
         assertEquals(0, productRepository.findAll().size());
-        assertEquals(0, purchaseOrderProductRepository.findAll().size());
+        assertEquals(0, orderProductRepository.findAll().size());
     }
 
     private Product getProduct(final String name, final Double price) {
@@ -200,11 +200,11 @@ public class RepositoryIT {
         return product;
     }
 
-    private PurchaseOrder getOrder(final String email) {
-        final PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setEmail(email);
-        purchaseOrder.setPurchaseOrderDate(new Date());
+    private Order getOrder(final String email) {
+        final Order order = new Order();
+        order.setEmail(email);
+        order.setOrderDate(new Date());
 
-        return purchaseOrder;
+        return order;
     }
 }

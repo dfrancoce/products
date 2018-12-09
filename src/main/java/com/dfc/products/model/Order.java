@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -18,20 +19,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "purchase_orders", schema = "public")
-public class PurchaseOrder {
+@Table(name = "orders", schema = "public")
+public class Order {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_generator")
+	@SequenceGenerator(name="order_generator", sequenceName = "order_seq")
 	private Long id;
 	@Column(name = "email")
 	private String email;
-	@Column(name = "purchaseOrderDate")
+	@Column(name = "orderDate")
 	@JsonFormat(pattern = "ddMMyyyy")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date purchaseOrderDate;
+	private Date orderDate;
 	@JsonIgnore
-	@OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<PurchaseOrderProduct> products;
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<OrderProduct> products;
 
 	public Long getId() {
 		return id;
@@ -49,19 +51,19 @@ public class PurchaseOrder {
 		this.email = email;
 	}
 
-	public Date getPurchaseOrderDate() {
-		return purchaseOrderDate;
+	public Date getOrderDate() {
+		return orderDate;
 	}
 
-	public void setPurchaseOrderDate(Date purchaseOrderDate) {
-		this.purchaseOrderDate = purchaseOrderDate;
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
 	}
 
-	public List<PurchaseOrderProduct> getProducts() {
+	public List<OrderProduct> getProducts() {
 		return products;
 	}
 
-	public void setProducts(List<PurchaseOrderProduct> products) {
+	public void setProducts(List<OrderProduct> products) {
 		this.products = products;
 	}
 }

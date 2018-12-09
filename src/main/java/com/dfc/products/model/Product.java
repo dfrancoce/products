@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "products", schema = "public")
 public class Product {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_generator")
+	@SequenceGenerator(name="product_generator", sequenceName = "product_seq")
 	private Long id;
 	@Column(name = "name")
 	private String name;
@@ -25,7 +27,7 @@ public class Product {
 	private Double price;
 	@JsonIgnore
 	@OneToMany(mappedBy = "product", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-	private List<PurchaseOrderProduct> orders;
+	private List<OrderProduct> orders;
 
 	public Long getId() {
 		return id;
@@ -51,11 +53,11 @@ public class Product {
 		this.price = price;
 	}
 
-	public List<PurchaseOrderProduct> getOrders() {
+	public List<OrderProduct> getOrders() {
 		return orders;
 	}
 
-	public void setOrders(List<PurchaseOrderProduct> orders) {
+	public void setOrders(List<OrderProduct> orders) {
 		this.orders = orders;
 	}
 }
