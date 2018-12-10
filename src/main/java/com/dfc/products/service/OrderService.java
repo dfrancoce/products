@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * This class contains the business logic to perform the different operations with orders
+ */
 @Service
 public class OrderService {
     private final Logger LOG = LoggerFactory.getLogger(OrderService.class);
@@ -48,7 +51,7 @@ public class OrderService {
 
             final Order dbOrder = orderRepository.save(order);
             return orderMapper.map(dbOrder);
-        }).orElseGet(() -> {
+        }).orElseGet(() -> { // if the order doesn't exist in the database
             LOG.warn("OrderService - update - Order with id = {} not found", id);
 
             final Order order = orderMapper.map(updatedOrderResource);

@@ -4,6 +4,9 @@ import com.dfc.products.model.Order;
 import com.dfc.products.service.resource.OrderResource;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is responsible for converting Order to OrderResource objects and the other way around
+ */
 @Component
 public class OrderMapper {
     public OrderResource map(final Order order) {

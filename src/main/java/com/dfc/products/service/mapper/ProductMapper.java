@@ -4,6 +4,9 @@ import com.dfc.products.model.Product;
 import com.dfc.products.service.resource.ProductResource;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is responsible for converting Product to ProductResource objects and the other way around
+ */
 @Component
 public class ProductMapper {
     public ProductResource map(final Product product) {

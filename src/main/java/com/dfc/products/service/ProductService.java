@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * This class contains the business logic to perform the different operations with products
+ */
 @Service
 public class ProductService {
     private final Logger LOG = LoggerFactory.getLogger(ProductService.class);
@@ -41,7 +44,7 @@ public class ProductService {
 
             final Product dbProduct = productRepository.save(product);
             return productMapper.map(dbProduct);
-        }).orElseGet(() -> {
+        }).orElseGet(() -> { // if the product doesn't exist in the database
             LOG.warn("ProductService - update - Product with id = {} not found", id);
 
             final Product product = productMapper.map(updatedProductResource);
