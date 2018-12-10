@@ -14,11 +14,15 @@ import com.dfc.products.repository.OrderProductRepository;
 import com.dfc.products.repository.OrderRepository;
 import com.dfc.products.service.mapper.ProductMapper;
 import com.dfc.products.service.resource.ProductResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderProductService {
+    private final Logger LOG = LoggerFactory.getLogger(OrderProductService.class);
+
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
@@ -33,21 +37,25 @@ public class OrderProductService {
     }
 
     public void addProductsToOrder(final List<ProductResource> productResources, final Long orderId) {
-        final Optional<Order> order = orderRepository.findById(orderId);
+        LOG.debug("OrderProductService - addProductsToOrder - start");
 
+        final Optional<Order> order = orderRepository.findById(orderId);
         order.ifPresent(orderObject -> productResources.forEach(productResource -> {
             final Product dbProduct = getStoredProduct(productMapper.map(productResource));
 
             if (Objects.nonNull(dbProduct)) {
                 final OrderProduct orderProduct = createOrderProduct(orderObject, dbProduct);
                 orderProductRepository.save(orderProduct);
+
+                LOG.debug("OrderProductService - addProductsToOrder - added product {}", dbProduct.getName());
             }
         }));
     }
 
     public void deleteProductsFromOrder(final List<ProductResource> productResources, final Long orderId) {
-        final Optional<Order> order = orderRepository.findById(orderId);
+        LOG.debug("OrderProductService - deleteProductsFromOrder - start");
 
+        final Optional<Order> order = orderRepository.findById(orderId);
         order.ifPresent(orderObject -> productResources.forEach(productResource -> {
             final Product dbProduct = getStoredProduct(productMapper.map(productResource));
 
@@ -56,13 +64,15 @@ public class OrderProductService {
                 final Optional<OrderProduct> orderProduct = orderProductRepository.findById(orderProductId);
 
                 orderProduct.ifPresent(orderProductRepository::delete);
+                LOG.debug("OrderProductService - deleteProductsFromOrder - deleted product {}", dbProduct.getName());
             }
         }));
     }
 
     public Double calculate(final Long orderId) {
-        final Optional<Order> order = orderRepository.findById(orderId);
+        LOG.debug("OrderProductService - calculate for order {} - start", orderId);
 
+        final Optional<Order> order = orderRepository.findById(orderId);
         if (order.isPresent()) {
             final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder(order.get());
             return orderProducts.stream().mapToDouble(OrderProduct::getPrice).sum();
@@ -72,6 +82,8 @@ public class OrderProductService {
     }
 
     List<ProductResource> getProductsOfAnOrder(final Long orderId) {
+        LOG.debug("OrderProductService - getProductsOfAnOrder for order {} - start", orderId);
+
         final Optional<Order> order = orderRepository.findById(orderId);
         final List<ProductResource> orderProducts = new ArrayList<>();
 
