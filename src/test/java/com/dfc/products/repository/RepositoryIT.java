@@ -2,7 +2,10 @@ package com.dfc.products.repository;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 import com.dfc.products.model.Order;
 import com.dfc.products.model.OrderProduct;
@@ -67,6 +70,23 @@ public class RepositoryIT {
     }
 
     @Test
+    public void findByOrderDateBetween() {
+        // given
+        final Order order = getOrder("test@gmail.com");
+        order.setOrderDate(Date.from(LocalDate.of(2018, 12, 9).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        orderRepository.save(order);
+        assertEquals(1, orderRepository.findAll().size());
+
+        // when
+        final Date fromDate = Date.from(LocalDate.of(2018, 12, 6).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        final Date toDate = Date.from(LocalDate.of(2018, 12, 10).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        final List<Order> orders = orderRepository.findByOrderDateBetween(fromDate, toDate);
+
+        // then
+        assertEquals(1, orders.size());
+    }
+
+    @Test
     public void insertProduct() {
         // given
         assertEquals(0, productRepository.findAll().size());
@@ -107,6 +127,20 @@ public class RepositoryIT {
 
         // then
         assertEquals(0, productRepository.findAll().size());
+    }
+
+    @Test
+    public void findProductByName() {
+        // given
+        final Product product = getProduct("Apple Macbook", 2000.00);
+        productRepository.save(product);
+        assertEquals(1, productRepository.findAll().size());
+
+        // when
+        final Product dbProduct = productRepository.findProductByName("Apple Macbook");
+
+        // then
+        assertEquals("Apple Macbook", dbProduct.getName());
     }
 
     @Test
@@ -190,6 +224,23 @@ public class RepositoryIT {
         assertEquals(1, orderRepository.findAll().size());
         assertEquals(0, productRepository.findAll().size());
         assertEquals(0, orderProductRepository.findAll().size());
+    }
+
+    @Test
+    public void findAllByOrder() {
+        // given
+        final Product macbook = getProduct("Apple Macbook", 2000.00);
+        productRepository.save(macbook);
+        final Order order = getOrder("applefan@gmail.com");
+        orderRepository.save(order);
+        final OrderProduct orderProduct = new OrderProduct(order, macbook);
+        orderProductRepository.save(orderProduct);
+
+        // when
+        final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder(order);
+
+        // then
+        assertEquals(1, orderProducts.size());
     }
 
     private Product getProduct(final String name, final Double price) {

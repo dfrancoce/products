@@ -19,79 +19,83 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderProductService {
-	@Autowired
-	private ProductRepository productRepository;
-	@Autowired
-	private OrderRepository orderRepository;
-	@Autowired
-	private OrderProductRepository orderProductRepository;
-	@Autowired
-	private ProductMapper productMapper;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final ProductMapper productMapper;
 
-	public void addProductsToOrder(final List<Product> products, final Long orderId) {
-		final Optional<Order> order = orderRepository.findById(orderId);
+    @Autowired
+    public OrderProductService(ProductRepository productRepository, OrderRepository orderRepository, OrderProductRepository orderProductRepository, ProductMapper productMapper) {
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+        this.orderProductRepository = orderProductRepository;
+        this.productMapper = productMapper;
+    }
 
-		order.ifPresent(orderObject -> products.forEach(product -> {
-			final Product dbProduct = getStoredProduct(product);
+    public void addProductsToOrder(final List<ProductResource> productResources, final Long orderId) {
+        final Optional<Order> order = orderRepository.findById(orderId);
 
-			if (Objects.nonNull(dbProduct)) {
-				final OrderProduct orderProduct = createOrderProduct(orderObject, dbProduct);
-				orderProductRepository.save(orderProduct);
-			}
-		}));
-	}
+        order.ifPresent(orderObject -> productResources.forEach(productResource -> {
+            final Product dbProduct = getStoredProduct(productMapper.map(productResource));
 
-	public void deleteProductsFromOrder(final List<Product> products, final Long orderId) {
-		final Optional<Order> order = orderRepository.findById(orderId);
+            if (Objects.nonNull(dbProduct)) {
+                final OrderProduct orderProduct = createOrderProduct(orderObject, dbProduct);
+                orderProductRepository.save(orderProduct);
+            }
+        }));
+    }
 
-		order.ifPresent(orderObject -> products.forEach(product -> {
-			final Product dbProduct = getStoredProduct(product);
+    public void deleteProductsFromOrder(final List<ProductResource> productResources, final Long orderId) {
+        final Optional<Order> order = orderRepository.findById(orderId);
 
-			if (Objects.nonNull(dbProduct)) {
-				final OrderProductId orderProductId = new OrderProductId(orderObject.getId(), dbProduct.getId());
-				final Optional<OrderProduct> orderProduct = orderProductRepository.findById(orderProductId);
+        order.ifPresent(orderObject -> productResources.forEach(productResource -> {
+            final Product dbProduct = getStoredProduct(productMapper.map(productResource));
 
-				orderProduct.ifPresent(orderProductObject -> orderProductRepository.delete(orderProductObject));
-			}
-		}));
-	}
+            if (Objects.nonNull(dbProduct)) {
+                final OrderProductId orderProductId = new OrderProductId(orderObject.getId(), dbProduct.getId());
+                final Optional<OrderProduct> orderProduct = orderProductRepository.findById(orderProductId);
 
-	public Double calculate(final Long orderId) {
-		final Optional<Order> order = orderRepository.findById(orderId);
+                orderProduct.ifPresent(orderProductRepository::delete);
+            }
+        }));
+    }
 
-		if (order.isPresent()) {
-			final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder(order.get());
-			return orderProducts.stream().mapToDouble(OrderProduct::getPrice).sum();
-		}
+    public Double calculate(final Long orderId) {
+        final Optional<Order> order = orderRepository.findById(orderId);
 
-		return 0.0;
-	}
+        if (order.isPresent()) {
+            final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder(order.get());
+            return orderProducts.stream().mapToDouble(OrderProduct::getPrice).sum();
+        }
 
-	List<ProductResource> getProductsOfAnOrder(final Long orderId) {
-		final Optional<Order> order = orderRepository.findById(orderId);
-		final List<ProductResource> orderProducts = new ArrayList<>();
+        return 0.0;
+    }
 
-		if (order.isPresent()) {
-			final List<OrderProduct> storedOrderProducts = orderProductRepository.findAllByOrder(order.get());
-			storedOrderProducts.forEach(orderProduct ->
-					orderProducts.add(productMapper.map(orderProduct.getProduct(), orderProduct.getPrice()))
-			);
-		}
+    List<ProductResource> getProductsOfAnOrder(final Long orderId) {
+        final Optional<Order> order = orderRepository.findById(orderId);
+        final List<ProductResource> orderProducts = new ArrayList<>();
 
-		return orderProducts;
-	}
+        if (order.isPresent()) {
+            final List<OrderProduct> storedOrderProducts = orderProductRepository.findAllByOrder(order.get());
+            storedOrderProducts.forEach(orderProduct ->
+                    orderProducts.add(productMapper.map(orderProduct.getProduct(), orderProduct.getPrice()))
+            );
+        }
 
-	private Product getStoredProduct(final Product product) {
-		Optional<Product> dbProductById = Optional.empty();
+        return orderProducts;
+    }
 
-		if (Objects.nonNull(product.getId())) {
-			dbProductById = productRepository.findById(product.getId());
-		}
+    private Product getStoredProduct(final Product product) {
+        Optional<Product> dbProductById = Optional.empty();
 
-		return dbProductById.orElseGet(() -> productRepository.findProductByName(product.getName()));
-	}
+        if (Objects.nonNull(product.getId())) {
+            dbProductById = productRepository.findById(product.getId());
+        }
 
-	private OrderProduct createOrderProduct(final Order order, final Product product) {
-		return new OrderProduct(order, product);
-	}
+        return dbProductById.orElseGet(() -> productRepository.findProductByName(product.getName()));
+    }
+
+    private OrderProduct createOrderProduct(final Order order, final Product product) {
+        return new OrderProduct(order, product);
+    }
 }

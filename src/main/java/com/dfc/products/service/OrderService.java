@@ -15,75 +15,79 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
-	@Autowired
-	private OrderRepository orderRepository;
-	@Autowired
-	private OrderProductService orderProductService;
-	@Autowired
-	private OrderMapper orderMapper;
+    private final OrderRepository orderRepository;
+    private final OrderProductService orderProductService;
+    private final OrderMapper orderMapper;
 
-	public OrderResource create(final OrderResource orderResource) {
-		final Order dbOrder = orderRepository.save(orderMapper.map(orderResource));
-		return orderMapper.map(dbOrder);
-	}
+    @Autowired
+    public OrderService(OrderRepository orderRepository, OrderProductService orderProductService, OrderMapper orderMapper) {
+        this.orderRepository = orderRepository;
+        this.orderProductService = orderProductService;
+        this.orderMapper = orderMapper;
+    }
 
-	public OrderResource update(final OrderResource updatedOrderResource, final Long id) {
-		return orderRepository.findById(id).map(order -> {
-			if (updatedOrderResource.getEmail() != null) order.setEmail(updatedOrderResource.getEmail());
-			if (updatedOrderResource.getOrderDate() != null) {
-				order.setOrderDate(updatedOrderResource.getOrderDate());
-			}
+    public OrderResource create(final OrderResource orderResource) {
+        final Order dbOrder = orderRepository.save(orderMapper.map(orderResource));
+        return orderMapper.map(dbOrder);
+    }
 
-			final Order dbOrder = orderRepository.save(order);
-			return orderMapper.map(dbOrder);
-		}).orElseGet(() -> {
-			final Order order = orderMapper.map(updatedOrderResource);
-			order.setId(id);
-			
-			final Order dbOrder = orderRepository.save(order);
-			return orderMapper.map(dbOrder);
-		});
-	}
+    public OrderResource update(final OrderResource updatedOrderResource, final Long id) {
+        return orderRepository.findById(id).map(order -> {
+            if (updatedOrderResource.getEmail() != null) order.setEmail(updatedOrderResource.getEmail());
+            if (updatedOrderResource.getOrderDate() != null) {
+                order.setOrderDate(updatedOrderResource.getOrderDate());
+            }
 
-	public void delete(final Long id) {
-		orderRepository.deleteById(id);
-	}
+            final Order dbOrder = orderRepository.save(order);
+            return orderMapper.map(dbOrder);
+        }).orElseGet(() -> {
+            final Order order = orderMapper.map(updatedOrderResource);
+            order.setId(id);
 
-	public OrderResource get(final Long id) {
-		final Optional<Order> dbOrder = orderRepository.findById(id);
+            final Order dbOrder = orderRepository.save(order);
+            return orderMapper.map(dbOrder);
+        });
+    }
 
-		if (dbOrder.isPresent()) {
-			final List<ProductResource> products = orderProductService.getProductsOfAnOrder(id);
-			final OrderResource orderResource = orderMapper.map(dbOrder.get());
-			orderResource.setProducts(products);
+    public void delete(final Long id) {
+        orderRepository.deleteById(id);
+    }
 
-			return orderResource;
-		} else {
-			return null;
-		}
-	}
+    public OrderResource get(final Long id) {
+        final Optional<Order> dbOrder = orderRepository.findById(id);
 
-	public List<OrderResource> get() {
-		final List<Order> orders = orderRepository.findAll();
-		return getOrders(orders);
-	}
+        if (dbOrder.isPresent()) {
+            final List<ProductResource> products = orderProductService.getProductsOfAnOrder(id);
+            final OrderResource orderResource = orderMapper.map(dbOrder.get());
+            orderResource.setProducts(products);
 
-	public List<OrderResource> get(final Date fromDate, final Date toDate) {
-		final List<Order> orders = orderRepository.findByOrderDateBetween(fromDate, toDate);
-		return getOrders(orders);
-	}
+            return orderResource;
+        } else {
+            return null;
+        }
+    }
 
-	private List<OrderResource> getOrders(List<Order> storedOrders) {
-		final List<OrderResource> orders = new ArrayList<>();
+    public List<OrderResource> get() {
+        final List<Order> orders = orderRepository.findAll();
+        return getOrders(orders);
+    }
 
-		storedOrders.forEach(order -> {
-			final List<ProductResource> products = orderProductService.getProductsOfAnOrder(order.getId());
-			final OrderResource orderResource = orderMapper.map(order);
-			orderResource.setProducts(products);
+    public List<OrderResource> get(final Date fromDate, final Date toDate) {
+        final List<Order> orders = orderRepository.findByOrderDateBetween(fromDate, toDate);
+        return getOrders(orders);
+    }
 
-			orders.add(orderResource);
-		});
+    private List<OrderResource> getOrders(List<Order> storedOrders) {
+        final List<OrderResource> orders = new ArrayList<>();
 
-		return orders;
-	}
+        storedOrders.forEach(order -> {
+            final List<ProductResource> products = orderProductService.getProductsOfAnOrder(order.getId());
+            final OrderResource orderResource = orderMapper.map(order);
+            orderResource.setProducts(products);
+
+            orders.add(orderResource);
+        });
+
+        return orders;
+    }
 }
