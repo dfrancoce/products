@@ -1,7 +1,6 @@
 # Products
 
-This project contains a REST API that enables the consumer to place orders in the system allowing her to add/remove
-products to each order.
+This project contains a REST API to place orders in the system allowing the API consumer to add/remove products to each order.
 
 ### Prerequisites
 
@@ -20,4 +19,4 @@ localhost:8080/swagger-ui.html
 
 ### Testing the app
 
-There is a JSON under the /tests folder in the project that can be used to execute tests in Postman
+There is a JSON under the /tests folder that can be imported in Postman to execute a suit of tests against the API.
