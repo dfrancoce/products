@@ -16,23 +16,23 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
-	@Bean
-	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(RequestHandlerSelectors.any())
-				.paths(Predicates.not(PathSelectors.regex("/error")))
-				.build()
-				.apiInfo(apiInfo());
-	}
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(Predicates.not(PathSelectors.regex("/error")))
+                .build()
+                .apiInfo(apiInfo());
+    }
 
-	private ApiInfo apiInfo() {
-		return new ApiInfo(
-				"Products REST API",
-				"REST API to manage orders and products.",
-				"v1",
-				"Terms of service",
-				new Contact("Daniel", "", ""),
-				"License of API", "API license URL", Collections.emptyList());
-	}
+    private ApiInfo apiInfo() {
+        return new ApiInfo(
+                "Products REST API",
+                "REST API to manage orders and products.",
+                "v1",
+                "Terms of service",
+                new Contact("Daniel", "", ""),
+                "License of API", "API license URL", Collections.emptyList());
+    }
 }

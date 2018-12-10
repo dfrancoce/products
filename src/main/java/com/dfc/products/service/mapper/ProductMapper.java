@@ -6,29 +6,30 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
-	public ProductResource map(final Product product) {
-		final ProductResource productResource = new ProductResource();
-		productResource.setId(product.getId());
-		productResource.setName(product.getName());
-		productResource.setPrice(product.getPrice());
+    public ProductResource map(final Product product) {
+        final ProductResource productResource = new ProductResource();
+        productResource.setId(product.getId());
+        productResource.setName(product.getName());
+        productResource.setPrice(product.getPrice());
 
-		return productResource;
-	}
+        return productResource;
+    }
 
-	public ProductResource map(final Product product, final Double price) {
-		final ProductResource productResource = new ProductResource();
-		productResource.setId(product.getId());
-		productResource.setName(product.getName());
-		productResource.setPrice(price);
+    public ProductResource map(final Product product, final Double price) {
+        final ProductResource productResource = new ProductResource();
+        productResource.setId(product.getId());
+        productResource.setName(product.getName());
+        productResource.setPrice(price);
 
-		return productResource;
-	}
+        return productResource;
+    }
 
-	public Product map(final ProductResource productResource) {
-		final Product product = new Product();
-		product.setName(productResource.getName());
-		product.setPrice(productResource.getPrice());
+    public Product map(final ProductResource productResource) {
+        final Product product = new Product();
+        product.setId(productResource.getId());
+        product.setName(productResource.getName());
+        product.setPrice(productResource.getPrice());
 
-		return product;
-	}
+        return product;
+    }
 }
