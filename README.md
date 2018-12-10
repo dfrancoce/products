@@ -10,7 +10,7 @@ Docker is required in order to start the app.
 
 To run the app just execute the following command in the root directory 
 ```
-docker compose up
+docker-compose up
 ```
 Once everything is up and running, an UI with the endpoints provided by the API can be seen at 
 ```
