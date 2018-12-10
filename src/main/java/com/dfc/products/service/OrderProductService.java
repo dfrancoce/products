@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * This class contains the business logic to perform the different operations with the products of an order
+ */
 @Service
 public class OrderProductService {
     private final Logger LOG = LoggerFactory.getLogger(OrderProductService.class);
